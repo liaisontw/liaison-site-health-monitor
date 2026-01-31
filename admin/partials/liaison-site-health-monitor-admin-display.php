@@ -14,15 +14,6 @@
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
-<?php
-
-$memory = shm_get_memory_usage();
-$db_time = shm_get_db_query_time();
-$plugins = shm_get_active_plugins_count();
-$wp_version = get_bloginfo('version');
-$rest_time = shm_get_rest_response_time();
-
-?>
 
 <div class="wrap">
     <h1>Site Health Monitor v1</h1>

@@ -139,7 +139,8 @@ class LIAISIHM_Admin {
 		$memory = $this->metrics->shm_get_memory_usage();
 		$db_time = $this->metrics->shm_get_db_query_time();
 		$plugins = $this->metrics->shm_get_active_plugins_count();
-		$wp_version = $this->metrics->get_bloginfo('version');
+		//$wp_version = $this->metrics->get_bloginfo('version');
+		$wp_version = get_bloginfo('version');
 		$rest_time = $this->metrics->shm_get_rest_response_time();
 
 		require_once( trailingslashit( dirname( __FILE__ ) ) . 'partials/liaison-site-health-monitor-admin-display.php' );	
