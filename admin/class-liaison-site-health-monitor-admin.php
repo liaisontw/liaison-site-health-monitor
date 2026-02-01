@@ -57,6 +57,17 @@ class LIAISIHM_Admin {
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
 		$this->metrics = new LIAISIHM_metrics();	
+		
+		//require_once __DIR__ . '/includes/class-shm-admin.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-db.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-query-profiler.php';
+
+		//register_activation_hook( __FILE__, [ 'SHM_DB', 'install' ] );
+
+		add_action( 'admin_menu', function() {
+			SHM_Query_Profiler::init();
+		});
+
 
 		add_action( 'admin_menu', array($this, 'admin_menu') );
 
@@ -141,6 +152,7 @@ class LIAISIHM_Admin {
 		$plugins = $this->metrics->shm_get_active_plugins_count();
 		$wp_version = get_bloginfo('version');
 		$rest_time = $this->metrics->shm_get_rest_response_time();
+
 
 		require_once( trailingslashit( dirname( __FILE__ ) ) . 'partials/liaison-site-health-monitor-admin-display.php' );	
 	}

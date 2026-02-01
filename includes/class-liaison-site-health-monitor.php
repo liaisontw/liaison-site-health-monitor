@@ -124,6 +124,16 @@ class LIAISIHM {
 
 		$this->loader = new LIAISIHM_Loader();
 
+		//require_once __DIR__ . '/includes/class-shm-admin.php';
+		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-db.php';
+		// require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-query-profiler.php';
+
+		//register_activation_hook( __FILE__, [ 'SHM_DB', 'install' ] );
+
+		// add_action( 'plugins_loaded', function() {
+		// 	SHM_Query_Profiler::init();
+		// });
+
 	}
 
 	/**

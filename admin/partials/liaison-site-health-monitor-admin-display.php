@@ -11,9 +11,47 @@
  * @package    liaison_site_health_monitor
  * @subpackage liaison_site_health_monitor/admin/partials
  */
+defined( 'ABSPATH' ) || exit;
+
+global $wpdb;
+		$table = SHM_DB::table_name();
+
+		$rows = $wpdb->get_results(
+			"SELECT query_text, total_time_ms, request_uri, created_at
+			FROM {$table}
+			ORDER BY total_time_ms DESC
+			LIMIT 10"
+		);
+
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
+
+<h2>Slow DB Queries</h2>
+
+<table class="widefat">
+    <thead>
+        <tr>
+            <th>Time (ms)</th>
+            <th>Query</th>
+            <th>Request</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ( $rows as $row ) : ?>
+        <tr>
+            <td><?php echo esc_html( round( $row->total_time_ms, 2 ) ); ?></td>
+            <td><code><?php echo esc_html( $row->query_text ); ?></code></td>
+            <td><?php echo esc_html( $row->request_uri ); ?></td>
+            <td><?php echo esc_html( $row->created_at ); ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
+
 
 <div class="wrap">
     <h1>Site Health Monitor v1</h1>
