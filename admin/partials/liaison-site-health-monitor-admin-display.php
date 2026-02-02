@@ -13,17 +13,6 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-global $wpdb;
-		$table = SHM_DB::table_name();
-
-		$rows = $wpdb->get_results(
-			"SELECT query_text, total_time_ms, request_uri, created_at
-			FROM {$table}
-			ORDER BY total_time_ms DESC
-			LIMIT 10"
-		);
-
-
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->

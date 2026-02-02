@@ -42,7 +42,7 @@ class LIAISIHM_Admin {
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
-
+	protected $db;
 	protected $metrics;
 
 	/**
@@ -58,14 +58,15 @@ class LIAISIHM_Admin {
 		$this->version = $version;
 		$this->metrics = new LIAISIHM_metrics();	
 		
-		//require_once __DIR__ . '/includes/class-shm-admin.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-db.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-shm-query-profiler.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-db.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-query-profiler.php';
 
-		//register_activation_hook( __FILE__, [ 'SHM_DB', 'install' ] );
+		//in activator
+		//register_activation_hook( __FILE__, [ 'LIAISIHM_DB', 'install' ] );
+		$this->db = new LIAISIHM_DB();
 
 		add_action( 'admin_menu', function() {
-			SHM_Query_Profiler::init();
+			LIAISIHM_Query_Profiler::init();
 		});
 
 
@@ -147,12 +148,13 @@ class LIAISIHM_Admin {
 	}
 
 	public function render_page_tabs() {
+		$wp_version = get_bloginfo('version');
+		$rows = $this->db->get_top_slow_queries();
+	
 		$memory = $this->metrics->shm_get_memory_usage();
 		$db_time = $this->metrics->shm_get_db_query_time();
 		$plugins = $this->metrics->shm_get_active_plugins_count();
-		$wp_version = get_bloginfo('version');
 		$rest_time = $this->metrics->shm_get_rest_response_time();
-
 
 		require_once( trailingslashit( dirname( __FILE__ ) ) . 'partials/liaison-site-health-monitor-admin-display.php' );	
 	}
