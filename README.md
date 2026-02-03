@@ -70,17 +70,18 @@ If `SAVEQUERIES` is not enabled, slow query monitoring will be automatically dis
 ### Plugin Structure
 
 ```
-site-health-monitor/
-├── site-health-monitor.php     # Plugin bootstrap
+liaison-site-health-monitor/
+├── liaison-site-health-monitor.php                     # Plugin bootstrap
 ├── includes/
-│   ├── class-shm-metrics.php   # Runtime metrics collection
-│   ├── class-shm-db.php        # Persistence layer
-│   ├── class-shm-profiler.php  # SAVEQUERIES-based analysis
-│   └── class-shm-admin.php     # Admin UI controller
+│   ├── class-liaison-site-health-monitor.php           # Main file
+│   ├── class-liaison-site-health-monitor-metrics.php   # Runtime metrics collection
+│   ├── class-liaison-site-health-monitor-db.php        # Persistence layer
+│   ├── class-liaison-site-health-monitor-profiler.php  # SAVEQUERIES-based analysis
+│   └── class-liaison-site-health-monitor-admin.php     # Admin UI controller
 ├── admin/
-│   └── views/
-│       └── dashboard.php       # Admin dashboard
-└── uninstall.php               # Cleanup logic
+│   └── partials/
+│       └── liaison-site-health-monitor-admin-display.php  # Admin dashboard
+└── uninstall.php                                       # Cleanup logic
 ```
 
 ---
