@@ -26,6 +26,8 @@ defined( 'ABSPATH' ) || exit;
             <th>Query</th>
             <th>Request</th>
             <th>Date</th>
+            <th>Normalized SQL</th>
+            <th>Index</th>
         </tr>
     </thead>
     <tbody>
@@ -35,6 +37,8 @@ defined( 'ABSPATH' ) || exit;
             <td><code><?php echo esc_html( $row->query_text ); ?></code></td>
             <td><?php echo esc_html( $row->request_uri ); ?></td>
             <td><?php echo esc_html( $row->created_at ); ?></td>
+            <td><?php echo esc_html( $row->normalized ); ?></td>
+            <td><?php echo esc_html( $row->has_index ); ?></td>
         </tr>
         <?php endforeach; ?>
     </tbody>

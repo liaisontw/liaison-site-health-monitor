@@ -24,6 +24,8 @@ class LIAISIHM_DB {
             call_stack TEXT NULL,
             request_uri TEXT NULL,
             created_at DATETIME NOT NULL,
+            normalized TEXT NULL,
+            has_index BOOLEAN NULL,
             PRIMARY KEY (id),
             KEY query_hash (query_hash),
             KEY created_at (created_at)
@@ -64,14 +66,23 @@ class LIAISIHM_DB {
             $values[] = $row['call_stack'];
             $values[] = $row['request_uri'];
             $values[] = $row['created_at'];
+            $values[] = $row['normalized'];
+            $values[] = $row['has_index'];
 
-            // 建立預處理預留位置 (s, s, d, s, s, s)
-            $placeholders[] = "(%s, %s, %f, %s, %s, %s)";
+            // 建立預處理預留位置
+            $placeholders[] = "(%s, %s, %f, %s, %s, %s, %s, %s)";
         }
 
         // 將所有預留位置合併： "(...), (...), (...)"
         $query = "INSERT INTO $table_name 
-                (query_hash, query_text, total_time_ms, call_stack, request_uri, created_at) 
+                (query_hash, 
+                 query_text, 
+                 total_time_ms, 
+                 call_stack, 
+                 request_uri, 
+                 created_at,
+                 normalized,
+                 has_index) 
                 VALUES " . implode( ', ', $placeholders );
 
         // 透過 $wpdb->prepare 安全地執行
@@ -92,7 +103,12 @@ class LIAISIHM_DB {
         global $wpdb;
 
 		$rows = $wpdb->get_results(
-			"SELECT query_text, total_time_ms, request_uri, created_at
+			"SELECT query_text, 
+                    total_time_ms, 
+                    request_uri, 
+                    created_at,
+                    normalized,
+                    has_index
 			FROM " . self::table_name() . "
 			ORDER BY total_time_ms DESC
 			LIMIT 10"
@@ -114,7 +130,12 @@ public static function get_top_slow_queries( $limit = 10 ) {
     // 2. 雖然此查詢無變數，但習慣上使用 prepare 增加一致性
     // 或是將 LIMIT 設為參數，增加方法的靈活性
     $query = $wpdb->prepare(
-        "SELECT query_text, total_time_ms, request_uri, created_at 
+        "SELECT query_text, 
+                total_time_ms, 
+                request_uri, 
+                created_at,
+                normalized,
+                has_index
          FROM {$table} 
          ORDER BY total_time_ms DESC 
          LIMIT %d",

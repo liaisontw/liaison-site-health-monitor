@@ -43,59 +43,11 @@ define( 'liaison_site_health_monitor_VERSION', '1.0.0' );
  */
 
 
-function liaisihm_define_SAVEQUERIES() {
-    if (   current_user_can('manage_options') 
-		//&& isset($_GET['debug_performance']) 
-	) {
-    	// 1. 定義常數（為了讓後續程式碼邏輯統一）
-        if ( ! defined( 'SAVEQUERIES' ) ) {
-            define( 'SAVEQUERIES', true );
-        }
 
-        // 2. 關鍵：直接介入 $wpdb 物件，強制開啟監聽
-        global $wpdb;
-        $wpdb->save_queries = true;
-	}
-}
-
-function liaisihm_early_savequeries_trigger() {
-    // 注意：此時 current_user_can 尚未完全穩定
-    // 建議改用檢查 Cookie 或特定 Debug 參數
-    if ( ! defined( 'SAVEQUERIES' ) ) {
-            define( 'SAVEQUERIES', true );
-        }
-
-        // 2. 關鍵：直接介入 $wpdb 物件，強制開啟監聽
-        global $wpdb;
-        $wpdb->save_queries = true;
-	
-	// if ( is_user_logged_in() && current_user_can('manage_options') ) {
-    //     global $wpdb;
-    //     $wpdb->save_queries = true;
-    // }
-}
-
-// 不要包在任何 function 裡，直接在檔案載入時就掛上 hooks
-add_action( 'plugins_loaded', 'liaisihm_force_enable_profiling', 1 );
-
-function liaisihm_force_enable_profiling() {
-    // 技巧：因為 current_user_can 可能太晚，
-    // 在 plugins_loaded 階段，我們通常檢查 cookie 或是否在後台
-    if ( is_admin() && is_user_logged_in() ) {
-        global $wpdb;
-        $wpdb->save_queries = true;
-        
-        // 既然啟動了記錄，現在就立刻初始化 Profiler，不要等 admin_menu
-        LIAISIHM_Query_Profiler::init();
-    }
-}
 function liaisihm_activate_liaison_site_health_monitor() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-liaison-site-health-monitor-activator.php';
 	LIAISIHM_Activator::activate();
 
-	//add_action( 'init', 'liaisihm_define_SAVEQUERIES' );
-	// 使用 plugins_loaded 會比 init 早很多
-	//add_action( 'plugins_loaded', 'liaisihm_early_savequeries_trigger' );
 }
 
 /**

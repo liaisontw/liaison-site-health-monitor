@@ -87,6 +87,15 @@ class LIAISIHM_metrics {
 	 * @access   private
 	 */
 	
+	public static function memory_peak() {
+        return memory_get_peak_usage( true );
+    }
+
+    public static function wp_version() {
+        global $wp_version;
+        return $wp_version;
+    }
+	
 	/**
 	 * Memory usage
 	 */

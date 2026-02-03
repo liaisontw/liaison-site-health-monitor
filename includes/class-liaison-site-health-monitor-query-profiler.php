@@ -3,8 +3,9 @@ defined( 'ABSPATH' ) || exit;
 
 class LIAISIHM_Query_Profiler {
 
-    const SLOW_QUERY_THRESHOLD_MS = 50;
+    const SLOW_QUERY_THRESHOLD_MS = 10;
     const RETENTION_DAYS = 7;
+    private static $patterns = [];
 
     public static function init() {
         // 展現全局思維：除了檢查常數，還應檢查當前用戶權限或環境
@@ -24,6 +25,7 @@ class LIAISIHM_Query_Profiler {
         return defined( 'SAVEQUERIES' ) && SAVEQUERIES;
     }
 
+    
     public static function collect_and_store_queries() {
         global $wpdb;
 
@@ -32,7 +34,7 @@ class LIAISIHM_Query_Profiler {
         }
         //error_log( 'SAVEQUERIES=' . ( defined('SAVEQUERIES') ? ( SAVEQUERIES ? 'true' : 'false' ) : 'undefined' ) );
         error_log( 'queries count=' . ( is_array( $wpdb->queries ) ? count( $wpdb->queries ) : 'not array' ) );
-
+ 
         $slow_queries = [];
         $current_time = current_time( 'mysql' );
         $request_uri  = $_SERVER['REQUEST_URI'] ?? '';
@@ -44,6 +46,7 @@ class LIAISIHM_Query_Profiler {
             $stack  = $query[2] ?? '';
 
             $time_ms = $time * 1000;
+            $normalized = self::normalize_sql( $sql );
 
             if ( $time_ms < self::SLOW_QUERY_THRESHOLD_MS ) {
                 continue;
@@ -56,7 +59,20 @@ class LIAISIHM_Query_Profiler {
                 'call_stack'    => is_string( $stack ) ? $stack : '',
                 'request_uri'   => $request_uri,
                 'created_at'    => $current_time,
+                'normalized'    => $normalized,
+                'has_index'     => self::has_index( $sql ),
             ];
+
+            // === N+1 Pattern Tracking ===
+            if ( ! isset( self::$patterns[ $normalized ] ) ) {
+                self::$patterns[ $normalized ] = [
+                    'count' => 0,
+                    'time'  => 0,
+                ];
+            }
+
+            self::$patterns[ $normalized ]['count']++;
+            self::$patterns[ $normalized ]['time'] += $time;
         }
 
         if ( ! empty( $slow_queries ) ) {
@@ -77,5 +93,28 @@ class LIAISIHM_Query_Profiler {
         remove_action( 'shutdown', [ __CLASS__, 'collect_and_store_queries' ], 999 );
         
         LIAISIHM_DB::insert_batch( $data );
+    }
+
+    private static function normalize_sql( $sql ) {
+        $sql = preg_replace( '/\'[^\']*\'/', '?', $sql );
+        $sql = preg_replace( '/\b\d+\b/', '?', $sql );
+        return trim( $sql );
+    }
+
+    private static function has_index( $sql ) {
+        global $wpdb;
+
+        if ( stripos( $sql, 'select' ) !== 0 ) {
+            return null;
+        }
+
+        $explain = $wpdb->get_results( 'EXPLAIN ' . $sql, ARRAY_A );
+
+        foreach ( (array) $explain as $row ) {
+            if ( empty( $row['key'] ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 }
