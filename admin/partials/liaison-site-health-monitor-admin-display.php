@@ -27,58 +27,6 @@ $current_threshold = LIAISIHM_DB::get_threshold();
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
 <div class="wrap shm-container">
-    
-    </div>
-    
-
-
-
-
-<div class="wrap shm-container">
-    <!-- <div> 
-        <h1 class="wp-heading-inline">Site Health Monitor Settings</h1>
-    
-        <div class="postbox" style="margin-top: 20px; max-width: 400px;">
-        <div class="postbox-header"><h2 class="hndle">Threshold Configuration</h2></div>
-        <div class="inside">
-            <form method="post" action="">
-                <?php wp_nonce_field( 'liaisihm_settings_action', 'liaisihm_nonce' ); ?>
-                <table class="form-table">
-                    <tr>
-                        <th scope="row"><label for="threshold">Slow Query Threshold</label></th>
-                        <td>
-                            <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text"> ms
-                            <p class="description">Queries taking longer than this will be logged.</p>
-                        </td>
-                    </tr>
-                </table>
-                <p class="submit">
-                    <input type="submit" name="liaisihm_save_settings" id="submit" class="button button-primary" value="Save Settings">
-                </p>
-            </form>
-        </div>
-    </div> 
-
-    <div> 
-    <h1 class="wp-heading-inline">Site Health Monitor v1</h1>
-    <hr class="wp-header-end">
-
-    <div class="welcome-panel" style="padding: 20px; margin-bottom: 20px; max-width: 800px;">
-        <div class="welcome-panel-column-container">
-            <div class="welcome-panel-column">
-                <h3><span class="dashicons dashicons-performance"></span> System Overview</h3>
-                <table class="widefat striped">
-                    <tbody>
-                        <tr><td><strong>PHP Memory</strong></td><td><code><?php echo esc_html($memory); ?> MB</code></td></tr>
-                        <tr><td><strong>Total DB Time</strong></td><td><code><?php echo esc_html($db_time); ?> ms</code></td></tr>
-                        <tr><td><strong>Active Plugins</strong></td><td><span class="update-plugins count-<?php echo (int)$plugins; ?>"><?php echo (int)$plugins; ?></span></td></tr>
-                        <tr><td><strong>WP Version</strong></td><td><?php echo esc_html($wp_version); ?></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    </div>  -->
     <div class="wrap">
     <h1 class="wp-heading-inline">Site Health Dashboard</h1>
     <hr class="wp-header-end">

@@ -99,14 +99,14 @@ class LIAISIHM_metrics {
 	/**
 	 * Memory usage
 	 */
-	public function shm_get_memory_usage() {
+	public static function shm_get_memory_usage() {
 		return round( memory_get_usage(true) / 1024 / 1024, 2 );
 	}
 
 	/**
 	 * DB query time
 	 */
-	public function shm_get_db_query_time() {
+	public static function shm_get_db_query_time() {
 		global $wpdb;
 
 		if ( empty( $wpdb->queries ) ) {
@@ -125,7 +125,7 @@ class LIAISIHM_metrics {
 	/**
 	 * Active plugin count
 	 */
-	public function shm_get_active_plugins_count() {
+	public static function shm_get_active_plugins_count() {
 		$plugins = get_option( 'active_plugins', [] );
 		return count( $plugins );
 	}
@@ -133,14 +133,10 @@ class LIAISIHM_metrics {
 	/**
 	 * REST response test
 	 */
-	public function shm_get_rest_response_time() {
-
+	public static function shm_get_rest_response_time() {
 		$start = microtime(true);
-
 		wp_remote_get( rest_url() );
-
 		$end = microtime(true);
-
 		return round( ($end - $start) * 1000, 2 );
 	}
 

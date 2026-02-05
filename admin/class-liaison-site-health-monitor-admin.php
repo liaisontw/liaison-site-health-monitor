@@ -23,6 +23,12 @@
 if ( ! class_exists( 'LIAISIHM_metrics' ) )
 	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-metrics.php';
 
+if ( ! class_exists( 'LIAISIHM_DB' ) )
+	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-db.php';
+
+if ( ! class_exists( 'LIAISIHM_Query_Profiler' ) )
+	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-query-profiler.php';
+
 class LIAISIHM_Admin {
 
 	/**
@@ -42,8 +48,6 @@ class LIAISIHM_Admin {
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
-	protected $db;
-	protected $metrics;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -56,21 +60,9 @@ class LIAISIHM_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
-		$this->metrics = new LIAISIHM_metrics();	
-		
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-db.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-query-profiler.php';
 
-		//in activator
-		//register_activation_hook( __FILE__, [ 'LIAISIHM_DB', 'install' ] );
-
-		add_action( 'admin_menu', function() {
-			LIAISIHM_Query_Profiler::init();
-		});
-
-
+		add_action( 'admin_menu', function() { LIAISIHM_Query_Profiler::init();	});
 		add_action( 'admin_menu', array($this, 'admin_menu') );
-
 	}
 
 	/**
@@ -108,17 +100,6 @@ class LIAISIHM_Admin {
 			$version,           // 版本號 (這就是解決 Cache 的關鍵)
 			'all'               // 媒體類型
 		);
-
-		/*
-		wp_enqueue_style( 
-			$this->plugin_name, 
-			plugin_dir_url( __FILE__ ) . 'css/liaison-site-health-monitor-admin.css', 
-			array(), 
-			$this->version, 
-			'all' 
-		);
-		*/
-
 	}
 
 	/**
@@ -165,7 +146,6 @@ class LIAISIHM_Admin {
 			'manage_options',
 			'site-health-monitor',
 			array($this, 'render_page_tabs'),
-			//'shm_render_admin_page',
 			'dashicons-heart',
 			60
 		);
@@ -174,11 +154,11 @@ class LIAISIHM_Admin {
 	public function render_page_tabs() {
 		$wp_version = get_bloginfo('version');
 		$rows = LIAISIHM_DB::get_top_slow_queries();
-	
-		$memory = $this->metrics->shm_get_memory_usage();
-		$db_time = $this->metrics->shm_get_db_query_time();
-		$plugins = $this->metrics->shm_get_active_plugins_count();
-		$rest_time = $this->metrics->shm_get_rest_response_time();
+			
+		$memory = LIAISIHM_metrics::shm_get_memory_usage();
+		$db_time = LIAISIHM_metrics::shm_get_db_query_time();
+		$plugins = LIAISIHM_metrics::shm_get_active_plugins_count();
+		$rest_time = LIAISIHM_metrics::shm_get_rest_response_time();
 
 		require_once( trailingslashit( dirname( __FILE__ ) ) . 'partials/liaison-site-health-monitor-admin-display.php' );	
 	}

@@ -29,7 +29,7 @@ class LIAISIHM_Query_Profiler {
         if ( empty( $wpdb->queries ) ) {
             return;
         }
-        //error_log( 'SAVEQUERIES=' . ( defined('SAVEQUERIES') ? ( SAVEQUERIES ? 'true' : 'false' ) : 'undefined' ) );
+
         error_log( 'queries count=' . ( is_array( $wpdb->queries ) ? count( $wpdb->queries ) : 'not array' ) );
  
         $slow_queries = [];
