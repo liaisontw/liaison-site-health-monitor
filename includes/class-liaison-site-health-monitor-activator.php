@@ -35,6 +35,7 @@ class LIAISIHM_Activator {
 		LIAISIHM_DB::install();
 		
 		add_option( 'liaison_site_health_monitor_active', 'yes' );
+		add_option( 'liaisihm_slow_query_threshold', 50 );
 	}
 
 }

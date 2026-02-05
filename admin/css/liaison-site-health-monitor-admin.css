@@ -2,3 +2,133 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+.shm-container { margin-top: 20px; }
+/* 強制限制表格佈局 */
+.shm-slow-query-table {
+    table-layout: fixed;
+    width: 100%;
+    background: #fff;
+}
+/* 設定欄寬比例 */
+.shm-col-time   { width: 80px; }
+.shm-col-query  { width: auto; } /* 彈性調整，但會被限制長度 */
+.shm-col-req    { width: 150px; }
+.shm-col-date   { width: 140px; }
+.shm-col-index  { width: 70px; }
+
+/* SQL 語句美化：限制顯示長度，超出部分省略並提供提示 */
+.shm-query-wrapper {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: #f0f0f1;
+    padding: 4px 8px;
+    border-radius: 3px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: help;
+    font-size: 12px;
+    color: #d63638; /* SQL 關鍵顏色 */
+}
+.shm-query-wrapper:hover {
+    white-space: normal;
+    word-break: break-all;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    position: relative;
+    z-index: 10;
+}
+
+/* 新增：正規化 SQL 的顯示樣式 */
+.shm-normalized-sql {
+    display: block;
+    font-size: 11px;
+    color: #646970; /* 灰褐色，代表次要訊息 */
+    margin-top: 4px;
+    font-family: monospace;
+    font-style: italic;
+}
+
+.shm-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    background: #dcdcde;
+    padding: 1px 3px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* 並排容器 */
+.shm-dashboard-flex {
+    display: flex;
+    gap: 20px; /* 區塊間距 */
+    align-items: flex-start; /* 頂部對齊 */
+    margin-top: 20px;
+}
+
+/* 子區塊寬度分配 */
+.shm-flex-item {
+    flex: 1; /* 平分寬度 */
+    min-width: 300px; /* 確保小螢幕時不會縮得太小 */
+}
+
+/* 針對 WordPress welcome-panel 的微調 */
+.shm-flex-item .welcome-panel {
+    border: 1px solid #c3c4c7;
+    box-shadow: none;
+}
+
+/* 響應式：當視窗寬度小於 850px 時改為垂直排列 */
+@media (max-width: 850px) {
+    .shm-dashboard-flex {
+        flex-direction: column;
+    }
+    .shm-flex-item {
+        width: 100%;
+    }
+}
+
+/* 針對概況表格的欄位加寬 */
+.shm-metrics-table td.shm-label-col {
+    width: 150px; /* 增加標籤欄的寬度 */
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+/* 讓數值欄的文字大一點，更易讀 */
+.shm-metrics-table td:last-child {
+    font-size: 14px;
+    font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+/* 確保 welcome-panel 內的表格撐滿容器 */
+.shm-flex-item .welcome-panel-column {
+    width: 100% !important;
+}
+
+/* 強制不換行設定 */
+.shm-metrics-table td {
+    white-space: nowrap; /* 核心關鍵：強制內容在同一行 */
+    padding: 12px 15px !important; /* 增加一點間距讓畫面不擁擠 */
+}
+
+/* 標籤欄：固定寬度並靠左對齊 */
+.shm-metrics-table td.shm-label-col {
+    width: 180px; /* 增加到 180px 確保中文英文都不會擠到 */
+    font-weight: 600;
+}
+
+/* 數值欄：讓它佔滿剩餘空間，並確保內部的 <code> 也不換行 */
+.shm-metrics-table td:last-child {
+    width: auto;
+}
+
+.shm-metrics-table code {
+    white-space: nowrap; 
+    background: #f0f0f1;
+    padding: 3px 6px;
+}
+/* 高耗時警示 */
+.shm-time-critical { color: #d63638; font-weight: bold; }
+.shm-time-warning  { color: #dba617; font-weight: bold; }

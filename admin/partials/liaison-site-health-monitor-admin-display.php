@@ -13,74 +13,53 @@
  */
 defined( 'ABSPATH' ) || exit;
 
+// 處理表單提交
+if ( isset( $_POST['liaisihm_save_settings'] ) && check_admin_referer( 'liaisihm_settings_action', 'liaisihm_nonce' ) ) {
+    $threshold = isset( $_POST['threshold'] ) ? floatval( $_POST['threshold'] ) : 50;
+    update_option( 'liaisihm_slow_query_threshold', $threshold );
+    echo '<div class="updated"><p>Settings saved!</p></div>';
+}
+
+$current_threshold = LIAISIHM_DB::get_threshold();
+
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->
 
+<div class="wrap shm-container">
+    
+    </div>
+    
 
-<style>
-    .shm-container { margin-top: 20px; }
-    /* 強制限制表格佈局 */
-    .shm-slow-query-table {
-        table-layout: fixed;
-        width: 100%;
-        background: #fff;
-    }
-    /* 設定欄寬比例 */
-    .shm-col-time   { width: 80px; }
-    .shm-col-query  { width: auto; } /* 彈性調整，但會被限制長度 */
-    .shm-col-req    { width: 150px; }
-    .shm-col-date   { width: 140px; }
-    .shm-col-index  { width: 70px; }
 
-    /* SQL 語句美化：限制顯示長度，超出部分省略並提供提示 */
-    .shm-query-wrapper {
-        font-family: 'Consolas', 'Monaco', monospace;
-        background: #f0f0f1;
-        padding: 4px 8px;
-        border-radius: 3px;
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        cursor: help;
-        font-size: 12px;
-        color: #d63638; /* SQL 關鍵顏色 */
-    }
-    .shm-query-wrapper:hover {
-        white-space: normal;
-        word-break: break-all;
-        background: #fff;
-        border: 1px solid #c3c4c7;
-        position: relative;
-        z-index: 10;
-    }
 
-    /* 新增：正規化 SQL 的顯示樣式 */
-    .shm-normalized-sql {
-        display: block;
-        font-size: 11px;
-        color: #646970; /* 灰褐色，代表次要訊息 */
-        margin-top: 4px;
-        font-family: monospace;
-        font-style: italic;
-    }
-
-    .shm-label {
-        font-size: 9px;
-        text-transform: uppercase;
-        background: #dcdcde;
-        padding: 1px 3px;
-        border-radius: 2px;
-        margin-right: 4px;
-        vertical-align: middle;
-    }
-    /* 高耗時警示 */
-    .shm-time-critical { color: #d63638; font-weight: bold; }
-    .shm-time-warning  { color: #dba617; font-weight: bold; }
-</style>
 
 <div class="wrap shm-container">
+    <!-- <div> 
+        <h1 class="wp-heading-inline">Site Health Monitor Settings</h1>
+    
+        <div class="postbox" style="margin-top: 20px; max-width: 400px;">
+        <div class="postbox-header"><h2 class="hndle">Threshold Configuration</h2></div>
+        <div class="inside">
+            <form method="post" action="">
+                <?php wp_nonce_field( 'liaisihm_settings_action', 'liaisihm_nonce' ); ?>
+                <table class="form-table">
+                    <tr>
+                        <th scope="row"><label for="threshold">Slow Query Threshold</label></th>
+                        <td>
+                            <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text"> ms
+                            <p class="description">Queries taking longer than this will be logged.</p>
+                        </td>
+                    </tr>
+                </table>
+                <p class="submit">
+                    <input type="submit" name="liaisihm_save_settings" id="submit" class="button button-primary" value="Save Settings">
+                </p>
+            </form>
+        </div>
+    </div> 
+
+    <div> 
     <h1 class="wp-heading-inline">Site Health Monitor v1</h1>
     <hr class="wp-header-end">
 
@@ -98,6 +77,66 @@ defined( 'ABSPATH' ) || exit;
                 </table>
             </div>
         </div>
+    </div>
+    </div>  -->
+    <div class="wrap">
+    <h1 class="wp-heading-inline">Site Health Dashboard</h1>
+    <hr class="wp-header-end">
+
+    <div class="shm-dashboard-flex">
+        
+        <div class="shm-flex-item">
+            <h2>Settings</h2>
+            <div class="postbox">
+                <div class="postbox-header">
+                    <h2 class="hndle">Threshold Configuration</h2>
+                </div>
+                <div class="inside">
+                    <form method="post" action="">
+                        <?php wp_nonce_field( 'liaisihm_settings_action', 'liaisihm_nonce' ); ?>
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row"><label for="threshold">Slow Query Threshold</label></th>
+                                <td>
+                                    <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text"> ms
+                                </td>
+                            </tr>
+                        </table>
+                        <p class="submit">
+                            <input type="submit" name="liaisihm_save_settings" id="submit" class="button button-primary" value="Save Settings">
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="shm-flex-item">
+            <div class="shm-flex-item">
+                <h2>System Overview</h2>
+                <div class="welcome-panel" style="padding: 10px; margin: 0;">
+                    <table class="widefat striped shm-metrics-table">
+                        <tbody>
+                            <tr>
+                                <td class="shm-label-col">PHP Memory</td>
+                                <td><code><?php echo esc_html($memory); ?> MB</code></td>
+                            </tr>
+                            <tr>
+                                <td class="shm-label-col">Total DB Time</td>
+                                <td><code><?php echo esc_html($db_time); ?> ms</code></td>
+                            </tr>
+                            <tr>
+                                <td class="shm-label-col">Active Plugins</td>
+                                <td><code><?php echo (int)$plugins; ?> active</code></td>
+                            </tr>
+                            <tr>
+                                <td class="shm-label-col">WP Version</td>
+                                <td><code><?php echo esc_html($wp_version); ?></code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> 
     </div>
 
     <h2>Slow DB Queries (Top 10)</h2>

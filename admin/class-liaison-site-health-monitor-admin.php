@@ -63,7 +63,6 @@ class LIAISIHM_Admin {
 
 		//in activator
 		//register_activation_hook( __FILE__, [ 'LIAISIHM_DB', 'install' ] );
-		$this->db = new LIAISIHM_DB();
 
 		add_action( 'admin_menu', function() {
 			LIAISIHM_Query_Profiler::init();
@@ -92,8 +91,33 @@ class LIAISIHM_Admin {
 		 * between the defined hooks and the functions defined in this
 		 * class.
 		 */
+		$file_path = plugin_dir_path( __FILE__ ) . 'css/liaison-site-health-monitor-admin.css';
+    	$file_url  = plugin_dir_url( __FILE__ ) . 'css/liaison-site-health-monitor-admin.css';
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/liaison-site-health-monitor-admin.css', array(), $this->version, 'all' );
+		/**
+		 * 工程品質亮點：自動版本化 (Auto-versioning)
+		 * 使用 filemtime 取得檔案最後修改的時間戳。
+		 * 這樣只要檔案內容一變，版本號就會變，完全解決快取問題。
+		 */
+		$version = file_exists( $file_path ) ? filemtime( $file_path ) : $this->version;
+
+		wp_enqueue_style(
+			$this->plugin_name, // 標籤名稱
+			$file_url,          // 檔案網址
+			array(),            // 相依性
+			$version,           // 版本號 (這就是解決 Cache 的關鍵)
+			'all'               // 媒體類型
+		);
+
+		/*
+		wp_enqueue_style( 
+			$this->plugin_name, 
+			plugin_dir_url( __FILE__ ) . 'css/liaison-site-health-monitor-admin.css', 
+			array(), 
+			$this->version, 
+			'all' 
+		);
+		*/
 
 	}
 
@@ -149,7 +173,7 @@ class LIAISIHM_Admin {
 
 	public function render_page_tabs() {
 		$wp_version = get_bloginfo('version');
-		$rows = $this->db->get_top_slow_queries();
+		$rows = LIAISIHM_DB::get_top_slow_queries();
 	
 		$memory = $this->metrics->shm_get_memory_usage();
 		$db_time = $this->metrics->shm_get_db_query_time();

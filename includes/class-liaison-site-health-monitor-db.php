@@ -118,30 +118,35 @@ class LIAISIHM_DB {
     }
 
     /**
- * 獲取資料庫效能紀錄
- * * @return array|object 查詢結果
- */
-public static function get_top_slow_queries( $limit = 10 ) {
-    global $wpdb;
+     * 獲取資料庫效能紀錄
+     * * @return array|object 查詢結果
+     */
+    public static function get_top_slow_queries( $limit = 10 ) {
+        global $wpdb;
 
-    // 1. 使用 wpdb 方法獲取表名（假設你在類中定義了 table_name 方法）
-    $table = self::table_name();
+        // 1. 使用 wpdb 方法獲取表名（假設你在類中定義了 table_name 方法）
+        $table = self::table_name();
 
-    // 2. 雖然此查詢無變數，但習慣上使用 prepare 增加一致性
-    // 或是將 LIMIT 設為參數，增加方法的靈活性
-    $query = $wpdb->prepare(
-        "SELECT query_text, 
-                total_time_ms, 
-                request_uri, 
-                created_at,
-                normalized,
-                has_index
-         FROM {$table} 
-         ORDER BY total_time_ms DESC 
-         LIMIT %d",
-        $limit
-    );
+        // 2. 雖然此查詢無變數，但習慣上使用 prepare 增加一致性
+        // 或是將 LIMIT 設為參數，增加方法的靈活性
+        $query = $wpdb->prepare(
+            "SELECT query_text, 
+                    total_time_ms, 
+                    request_uri, 
+                    created_at,
+                    normalized,
+                    has_index
+            FROM {$table} 
+            ORDER BY total_time_ms DESC 
+            LIMIT %d",
+            $limit
+        );
 
-    return $wpdb->get_results( $query );
-}
+        return $wpdb->get_results( $query );
+    }
+
+    public static function get_threshold() {
+        // 從資料庫取得設定，預設為 50
+        return (float) get_option( 'liaisihm_slow_query_threshold', 50 );
+    }
 }
