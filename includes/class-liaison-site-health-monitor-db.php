@@ -135,7 +135,8 @@ class LIAISIHM_DB {
                     request_uri, 
                     created_at,
                     normalized,
-                    has_index
+                    has_index,
+                    call_stack
             FROM {$table} 
             ORDER BY total_time_ms DESC 
             LIMIT %d",

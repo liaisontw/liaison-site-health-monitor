@@ -15,6 +15,7 @@
 .shm-col-req    { width: 150px; }
 .shm-col-date   { width: 140px; }
 .shm-col-index  { width: 70px; }
+.shm-col-stack  { width: auto; } /* 彈性調整，但會被限制長度 */
 
 /* SQL 語句美化：限制顯示長度，超出部分省略並提供提示 */
 .shm-query-wrapper {
@@ -128,6 +129,23 @@
     white-space: nowrap; 
     background: #f0f0f1;
     padding: 3px 6px;
+}
+
+.shm-toggle-stack {
+    text-decoration: none;
+    font-size: 11px;
+    color: #2271b1;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 5px;
+}
+.shm-toggle-stack:hover { color: #135e96; }
+.shm-stack-content {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    line-height: 1.4;
+    color: #50575e;
+    word-break: break-all;
+    white-space: pre-wrap; /* 保持換行格式 */
 }
 /* 高耗時警示 */
 .shm-time-critical { color: #d63638; font-weight: bold; }

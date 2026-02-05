@@ -42,21 +42,26 @@ class LIAISIHM_Query_Profiler {
             // 安全解構：WP 核心格式有時會包含多個元素（如執行起始時間）
             $sql    = $query[0] ?? '';
             $time   = $query[1] ?? 0;
-            $stack  = $query[2] ?? '';
 
             $time_ms = $time * 1000;
-            $normalized = self::normalize_sql( $sql );
-
-            //if ( $time_ms < self::SLOW_QUERY_THRESHOLD_MS ) {
             if ( $time_ms < $threshold_ms ) {
                 continue;
             }
+
+            $normalized = self::normalize_sql( $sql );
+            /* * 關鍵時刻：在此處呼叫回溯
+            * 因為這條查詢已經被判定為「慢」，
+            * 此時花費幾毫秒來獲取堆疊資訊是完全合理的「診斷成本」。
+            */
+            $stack  = $query[2] ?? '';
+            $stack = self::get_simplified_backtrace(); 
 
             $slow_queries[] = [
                 'query_hash'    => md5( $sql ),
                 'query_text'    => $sql,
                 'total_time_ms' => $time_ms,
                 'call_stack'    => is_string( $stack ) ? $stack : '',
+                //'call_stack'      => $stack_trace, // 存入堆疊
                 'request_uri'   => $request_uri,
                 'created_at'    => $current_time,
                 'normalized'    => $normalized,
@@ -86,6 +91,28 @@ class LIAISIHM_Query_Profiler {
             LIAISIHM_DB::cleanup( self::RETENTION_DAYS );
         }
     }
+
+    private static function get_simplified_backtrace() {
+        $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
+        $stack = [];
+
+        foreach ( $trace as $node ) {
+            // 排除掉我們自己的插件檔案與 WordPress 核心資料庫處理檔案，直達病灶
+            if ( isset( $node['file'] ) && 
+                strpos( $node['file'], 'wp-db.php' ) === false && 
+                strpos( $node['file'], 'class-shm-wpdb.php' ) === false ) {
+                
+                $file = str_replace( ABSPATH, '', $node['file'] ); // 簡化路徑，隱藏伺服器隱私
+                $stack[] = "{$file}:{$node['line']} ({$node['function']})";
+            }
+            
+            // 只取前 5 層，避免儲存負擔過大
+            if ( count( $stack ) >= 5 ) break;
+        }
+
+        return implode( "\n", $stack );
+    }
+    
 
     private static function save_batch( array $data ) {
         // 在這裡呼叫 LIAISIHM_DB::insert_batch

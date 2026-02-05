@@ -96,6 +96,7 @@ $current_threshold = LIAISIHM_DB::get_threshold();
                 <th class="shm-col-req">Request URI</th>
                 <th class="shm-col-date">Created At</th>
                 <th class="shm-col-index">Index?</th>
+                <th class="shm-col-stack">Call Stack</th>
             </tr>
         </thead>
         <tbody>
@@ -127,6 +128,26 @@ $current_threshold = LIAISIHM_DB::get_threshold();
                     <td><?php echo esc_html( $row->created_at ); ?></td>
                     <td>
                         </td>
+                    <td>
+
+                        <?php if ( ! empty( $row->call_stack ) ) : ?>
+                            <div class="shm-stack-trace-container" style="margin-top: 8px;">
+                                <a href="javascript:void(0);" 
+                                class="shm-toggle-stack" 
+                                style="text-decoration: none; font-size: 11px; color: #2271b1; display: flex; align-items: center;"
+                                onclick="const el = this.nextElementSibling; el.style.display = el.style.display === 'none' ? 'block' : 'none';">
+                                    <span class="dashicons dashicons-editor-code" style="font-size: 14px; width: 14px; height: 14px; margin-right: 4px;"></span>
+                                    View Call Stack
+                                </a>
+                                <div class="shm-stack-content" style="display:none; font-size: 10px; background: #f6f7f7; padding: 8px; border-left: 3px solid #2271b1; margin-top: 5px; font-family: monospace; line-height: 1.5; color: #50575e;">
+                                    <?php 
+                                        // 將儲存的字串換行轉換為 HTML 換行
+                                        echo nl2br( esc_html( $row->call_stack ) ); 
+                                    ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
