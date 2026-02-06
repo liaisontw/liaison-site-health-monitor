@@ -80,6 +80,10 @@ $current_threshold = LIAISIHM_DB::get_threshold();
                                     <td class="shm-label-col">WP Version</td>
                                     <td><code><?php echo esc_html($wp_version); ?></code></td>
                                 </tr>
+                                <tr>
+                                    <td class="shm-label-col">Cache Hit Ratio</td>
+                                    <td><?php echo LIAISIHM_Audit::get_object_cache_stats(); ?></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>

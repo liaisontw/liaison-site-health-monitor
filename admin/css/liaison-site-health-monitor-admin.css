@@ -188,6 +188,28 @@
     margin: 0;
     padding: 0;
 }
+
+.shm-status-good {
+    color: #008a20;
+    font-weight: 600;
+}
+.shm-status-warning {
+    color: #dba617;
+    font-weight: 600;
+}
+.shm-status-bad {
+    color: #d63638;
+    font-weight: 600;
+}
+/* 讓警告圖示閃爍一下，增加提醒感 */
+.shm-status-bad .dashicons-warning {
+    animation: shm-blink 1s infinite;
+}
+@keyframes shm-blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
 /* 高耗時警示 */
 .shm-time-critical { color: #d63638; font-weight: bold; }
 .shm-time-warning  { color: #dba617; font-weight: bold; }
