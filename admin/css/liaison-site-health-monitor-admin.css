@@ -71,7 +71,7 @@
 /* 子區塊寬度分配 */
 .shm-flex-item {
     flex: 1; /* 平分寬度 */
-    min-width: 300px; /* 確保小螢幕時不會縮得太小 */
+    min-width: 200px; /* 確保小螢幕時不會縮得太小 */
 }
 
 /* 針對 WordPress welcome-panel 的微調 */
@@ -146,6 +146,47 @@
     color: #50575e;
     word-break: break-all;
     white-space: pre-wrap; /* 保持換行格式 */
+}
+
+/* 緊湊設定區塊 */
+.shm-compact-settings {
+    padding: 12px !important;
+}
+
+.shm-inline-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap; /* 確保小螢幕時自動換行 */
+}
+
+.shm-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.shm-input-group label {
+    font-weight: 600;
+    margin: 0;
+}
+
+.shm-input-group input[type="number"] {
+    margin: 0;
+    height: 30px;
+    vertical-align: middle;
+}
+
+.shm-compact-settings .description {
+    margin-top: 10px;
+    font-style: italic;
+    font-size: 12px;
+}
+
+/* 覆蓋 WordPress 預設的按鈕邊距 */
+.shm-compact-settings .shm-action-group .submit {
+    margin: 0;
+    padding: 0;
 }
 /* 高耗時警示 */
 .shm-time-critical { color: #d63638; font-weight: bold; }

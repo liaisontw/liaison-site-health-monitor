@@ -29,6 +29,10 @@ if ( ! class_exists( 'LIAISIHM_DB' ) )
 if ( ! class_exists( 'LIAISIHM_Query_Profiler' ) )
 	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-query-profiler.php';
 
+if ( ! class_exists( 'LIAISIHM_Audit' ) )
+	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-audit.php';
+
+
 class LIAISIHM_Admin {
 
 	/**

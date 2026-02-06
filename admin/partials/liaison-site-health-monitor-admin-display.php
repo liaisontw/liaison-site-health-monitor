@@ -28,63 +28,87 @@ $current_threshold = LIAISIHM_DB::get_threshold();
 
 <div class="wrap shm-container">
     <div class="wrap">
-    <h1 class="wp-heading-inline">Site Health Dashboard</h1>
-    <hr class="wp-header-end">
+        <h1 class="wp-heading-inline">Site Health Dashboard</h1>
+        <hr class="wp-header-end">
 
-    <div class="shm-dashboard-flex">
-        
-        <div class="shm-flex-item">
-            <h2>Settings</h2>
-            <div class="postbox">
-                <div class="postbox-header">
-                    <h2 class="hndle">Threshold Configuration</h2>
-                </div>
-                <div class="inside">
-                    <form method="post" action="">
-                        <?php wp_nonce_field( 'liaisihm_settings_action', 'liaisihm_nonce' ); ?>
-                        <table class="form-table">
-                            <tr>
-                                <th scope="row"><label for="threshold">Slow Query Threshold</label></th>
-                                <td>
-                                    <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text"> ms
-                                </td>
-                            </tr>
-                        </table>
-                        <p class="submit">
-                            <input type="submit" name="liaisihm_save_settings" id="submit" class="button button-primary" value="Save Settings">
-                        </p>
-                    </form>
+        <div class="shm-dashboard-flex">
+            
+            <div class="shm-flex-item">
+                <h2>Settings</h2>
+                <div class="postbox">
+                    <div class="postbox-header">
+                        <h2 class="hndle">Threshold Configuration</h2>
+                    </div>
+                    <div class="inside shm-compact-settings">
+                        <form method="post" action="" class="shm-inline-form">
+                            <?php wp_nonce_field( 'liaisihm_settings_action', 'liaisihm_nonce' ); ?>
+                            
+                            <div class="shm-input-group">
+                                <label for="threshold">Slow Query Threshold:</label>
+                                <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text">
+                                <span class="unit">ms</span>
+                            </div>
+
+                            <div class="shm-action-group">
+                                <input type="submit" name="liaisihm_save_settings" id="submit" class="button button-primary button-small" value="Save Settings">
+                            </div>
+                        </form>
+                        <p class="description">Queries exceeding this limit will be logged.</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="shm-flex-item">
             <div class="shm-flex-item">
-                <h2>System Overview</h2>
+                <div class="shm-flex-item">
+                    <h2>System Overview</h2>
+                    <div class="welcome-panel" style="padding: 10px; margin: 0;">
+                        <table class="widefat striped shm-metrics-table">
+                            <tbody>
+                                <tr>
+                                    <td class="shm-label-col">PHP Memory</td>
+                                    <td><code><?php echo esc_html($memory); ?> MB</code></td>
+                                </tr>
+                                <tr>
+                                    <td class="shm-label-col">Total DB Time</td>
+                                    <td><code><?php echo esc_html($db_time); ?> ms</code></td>
+                                </tr>
+                                <tr>
+                                    <td class="shm-label-col">Active Plugins</td>
+                                    <td><code><?php echo (int)$plugins; ?> active</code></td>
+                                </tr>
+                                <tr>
+                                    <td class="shm-label-col">WP Version</td>
+                                    <td><code><?php echo esc_html($wp_version); ?></code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div> 
+
+            <div class="shm-flex-item">
+                <h2>System Audit</h2>
                 <div class="welcome-panel" style="padding: 10px; margin: 0;">
+
                     <table class="widefat striped shm-metrics-table">
                         <tbody>
                             <tr>
-                                <td class="shm-label-col">PHP Memory</td>
-                                <td><code><?php echo esc_html($memory); ?> MB</code></td>
+                                <td class="shm-label-col">OPCache</td>
+                                <td><?php echo LIAISIHM_Audit::get_opcache_status(); ?></td>
                             </tr>
                             <tr>
-                                <td class="shm-label-col">Total DB Time</td>
-                                <td><code><?php echo esc_html($db_time); ?> ms</code></td>
+                                <td class="shm-label-col">DB Engine</td>
+                                <td><?php echo LIAISIHM_Audit::get_mysql_info(); ?></td>
                             </tr>
                             <tr>
-                                <td class="shm-label-col">Active Plugins</td>
-                                <td><code><?php echo (int)$plugins; ?> active</code></td>
-                            </tr>
-                            <tr>
-                                <td class="shm-label-col">WP Version</td>
-                                <td><code><?php echo esc_html($wp_version); ?></code></td>
+                                <td class="shm-label-col">Autoload Size</td>
+                                <td><?php echo LIAISIHM_Audit::get_autoload_size(); ?></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 
     <h2>Slow DB Queries (Top 10)</h2>
