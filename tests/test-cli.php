@@ -1,5 +1,6 @@
 <?php
 use PHPUnit\Framework\TestCase;
+require_once __DIR__ . '/../includes/class-liaison-site-health-monitor-cli.php';
 
 /**
  * 測試 Site_Health_Audit_CLI
