@@ -3,6 +3,18 @@ use PHPUnit\Framework\TestCase;
 require_once __DIR__ . '/../includes/class-liaison-site-health-monitor-cli.php';
 
 /**
+ * 為了避免測試環境缺少 WP-CLI，我們在檔案頂部宣告一個模擬類別
+ */
+if ( ! class_exists( 'WP_CLI' ) ) {
+    class WP_CLI {
+        public static function line( $text ) { echo $text . "\n"; }
+        public static function colorize( $text ) { return $text; }
+        public static function success( $text ) { echo "Success: " . $text . "\n"; }
+        public static function log( $text ) { echo $text . "\n"; }
+        public static function error( $text ) { echo "Error: " . $text . "\n"; }
+    }
+}
+/**
  * Class Site_Health_Audit_CLI_Test
  */
 class Site_Health_Audit_CLI_Test extends WP_UnitTestCase {
@@ -12,15 +24,7 @@ class Site_Health_Audit_CLI_Test extends WP_UnitTestCase {
     public function set_up() {
         parent::set_up();
         
-        // 如果 WP_CLI 類別不存在（例如在單純的 PHPUnit 環境），手動定義一個 Mock
-        if ( ! class_exists( 'WP_CLI' ) ) {
-            class WP_CLI {
-                public static function line( $text ) { echo $text . "\n"; }
-                public static function colorize( $text ) { return $text; } // 測試環境不處理顏色代碼
-                public static function success( $text ) { echo "Success: " . $text . "\n"; }
-                public static function log( $text ) { echo $text . "\n"; }
-            }
-        }
+        
 
         $this->cli = new Site_Health_Audit_CLI();
     }
