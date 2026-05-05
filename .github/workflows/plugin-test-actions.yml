@@ -1,0 +1,68 @@
+name: WordPress Plugin Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  phpunit:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mariadb:10.6
+        env:
+          #MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+      
+        #image: mysql:8.0
+        #env:
+        #  MYSQL_ROOT_PASSWORD: root
+        #  MYSQL_DATABASE: wordpress_test
+        #ports:
+        #  - 3306:3306
+        #options: >-
+        #  --health-cmd="mysqladmin ping --silent"
+        #  --health-interval=10s
+        #  --health-timeout=5s
+        #  --health-retries=5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: mysqli, zip
+          coverage: none
+
+      #- name: Install system dependencies
+      #  run: |
+      #    sudo apt-get update
+      #    sudo apt-get install -y subversion mysql-client unzip
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install WordPress test suite
+        run: |
+          bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
+          sed -n '1,200p' bin/install-wp-tests.sh
+
+      - name: Install PHPUnit
+        run: |
+          curl -sSLo phpunit.phar https://phar.phpunit.de/phpunit-9.phar
+          chmod +x phpunit.phar
+          sudo mv phpunit.phar /usr/local/bin/phpunit
+
+      - name: Run PHPUnit
+        run: |
+          phpunit
+          
+

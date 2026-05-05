@@ -84,3 +84,11 @@ function liaisihm_run_liaison_site_health_monitor() {
 
 }
 liaisihm_run_liaison_site_health_monitor();
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+    // 確保你的類別檔案已經被載入
+    require_once __DIR__ . '/includes/class-liaison-site-health-monitor-cli.php'; 
+    
+    WP_CLI::add_command( 'site-health', 'Site_Health_Audit_CLI' );
+}
+
