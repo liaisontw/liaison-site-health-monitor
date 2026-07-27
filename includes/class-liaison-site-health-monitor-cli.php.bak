@@ -2,7 +2,7 @@
 /**
  * Site Health Audit CLI Command
  */
-class LIAISIHM_CLI {
+class Site_Health_Audit_CLI {
 
     /**
      * 執行效能審計並輸出報告
@@ -25,14 +25,14 @@ class LIAISIHM_CLI {
 
     public function audit( $args, $assoc_args ) {
         // 清理 Cache Stats 中的 HTML 標籤
-        $liaisihm_cache_val = trim( wp_strip_all_tags( LIAISIHM_Audit::get_object_cache_stats() ) );
+        $cache_val = trim( strip_tags( LIAISIHM_Audit::get_object_cache_stats() ) );
 
         // 1. 系統指標 (這部分較短，維持表格或改用簡單 line)
         WP_CLI::line( WP_CLI::colorize( "%B--- System Health Metrics ---%n" ) );
         WP_CLI::line( "  PHP Memory Limit: " . ini_get('memory_limit') );
         WP_CLI::line( "  Current Usage:    " .  size_format( memory_get_usage() ) ); // 新增
         WP_CLI::line( "  Autoload Size:    " .  size_format( LIAISIHM_Audit::get_autoload_size() ) );
-        WP_CLI::line( "  Cache Hit Ratio:  " .  $liaisihm_cache_val . '%' );
+        WP_CLI::line( "  Cache Hit Ratio:  " .  $cache_val . '%' );
         WP_CLI::line( "  Object Cache:     " . (wp_using_ext_object_cache() ? 'External' : 'Internal') );
         WP_CLI::line( str_repeat('-', 40) );
 

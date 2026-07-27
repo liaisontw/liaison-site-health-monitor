@@ -20,7 +20,7 @@ if ( isset( $_POST['liaisihm_save_settings'] ) && check_admin_referer( 'liaisihm
     echo '<div class="updated"><p>Settings saved!</p></div>';
 }
 
-$liaisihm_current_threshold = LIAISIHM_DB::get_threshold();
+$current_threshold = LIAISIHM_DB::get_threshold();
 
 ?>
 
@@ -45,7 +45,7 @@ $liaisihm_current_threshold = LIAISIHM_DB::get_threshold();
                             
                             <div class="shm-input-group">
                                 <label for="threshold">Slow Query Threshold:</label>
-                                <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $liaisihm_current_threshold ); ?>" class="small-text">
+                                <input name="threshold" type="number" id="threshold" value="<?php echo esc_attr( $current_threshold ); ?>" class="small-text">
                                 <span class="unit">ms</span>
                             </div>
 
@@ -82,7 +82,7 @@ $liaisihm_current_threshold = LIAISIHM_DB::get_threshold();
                                 </tr>
                                 <tr>
                                     <td class="shm-label-col">Cache Hit Ratio</td>
-                                    <td><?php echo wp_kses_post( LIAISIHM_Audit::get_object_cache_stats() ); ?></td>
+                                    <td><?php echo LIAISIHM_Audit::get_object_cache_stats(); ?></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -98,15 +98,15 @@ $liaisihm_current_threshold = LIAISIHM_DB::get_threshold();
                         <tbody>
                             <tr>
                                 <td class="shm-label-col">OPCache</td>
-                                <td><?php echo wp_kses_post( LIAISIHM_Audit::get_opcache_status() ); ?></td>
+                                <td><?php echo LIAISIHM_Audit::get_opcache_status(); ?></td>
                             </tr>
                             <tr>
                                 <td class="shm-label-col">DB Engine</td>
-                                <td><?php echo wp_kses_post( LIAISIHM_Audit::get_mysql_info() ); ?></td>
+                                <td><?php echo LIAISIHM_Audit::get_mysql_info(); ?></td>
                             </tr>
                             <tr>
                                 <td class="shm-label-col">Autoload Size</td>
-                                <td><?php echo wp_kses_post( LIAISIHM_Audit::get_autoload_size() ); ?></td>
+                                <td><?php echo LIAISIHM_Audit::get_autoload_size(); ?></td>
                             </tr>
                         </tbody>
                     </table>
@@ -128,16 +128,16 @@ $liaisihm_current_threshold = LIAISIHM_DB::get_threshold();
             </tr>
         </thead>
         <tbody>
-            <?php if ( empty( $liaisihm_rows ) ) : ?>
+            <?php if ( empty( $rows ) ) : ?>
                 <tr><td colspan="5">No slow queries detected yet. Keep up the good work!</td></tr>
             <?php else : ?>
-                <?php foreach ( $liaisihm_rows as $row ) : 
-                    $liaisihm_time_class = '';
-                    if ( $row->total_time_ms > 500 ) $liaisihm_time_class = 'shm-time-critical';
-                    elseif ( $row->total_time_ms > 100 ) $liaisihm_time_class = 'shm-time-warning';
+                <?php foreach ( $rows as $row ) : 
+                    $time_class = '';
+                    if ( $row->total_time_ms > 500 ) $time_class = 'shm-time-critical';
+                    elseif ( $row->total_time_ms > 100 ) $time_class = 'shm-time-warning';
                 ?>
                 <tr>
-                    <td class="<?php echo esc_attr( $liaisihm_time_class ); ?>">
+                    <td class="<?php echo $time_class; ?>">
                         <?php echo esc_html( number_format( $row->total_time_ms, 2 ) ); ?>
                     </td>
                     <td>

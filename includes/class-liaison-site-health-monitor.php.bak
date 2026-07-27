@@ -67,8 +67,8 @@ class LIAISIHM {
 	 * @since    1.0.0
 	 */
 	public function __construct() {
-		if ( defined( 'LIAISIHM_VERSION' ) ) {
-			$this->version = LIAISIHM_VERSION;
+		if ( defined( 'liaison_site_health_monitor_VERSION' ) ) {
+			$this->version = liaison_site_health_monitor_VERSION;
 		} else {
 			$this->version = '1.0.0';
 		}

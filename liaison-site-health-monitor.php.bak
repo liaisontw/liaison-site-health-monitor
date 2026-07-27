@@ -15,7 +15,7 @@
  * @wordpress-plugin
  * Plugin Name:       liaison site health monitor DEV
  * Plugin URI:        https://github.com/liaisontw/liaison-site-health-monitor
- * Description:       Developer-focused WordPress diagnostic plugin using WordPress core SAVEQUERIES for site health metrics and slow query profiling.
+ * Description:       This is a description of the plugin.
  * Version:           1.0.0
  * Author:            liason
  * Author URI:        https://github.com/liaisontw/
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'LIAISIHM_VERSION', '1.0.0' );
+define( 'liaison_site_health_monitor_VERSION', '1.0.0' );
 
 /**
  * The code that runs during plugin activation.
@@ -89,6 +89,6 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
     // 確保你的類別檔案已經被載入
     require_once __DIR__ . '/includes/class-liaison-site-health-monitor-cli.php'; 
     
-    WP_CLI::add_command( 'site-health', 'LIAISIHM_CLI' );
+    WP_CLI::add_command( 'site-health', 'Site_Health_Audit_CLI' );
 }
 

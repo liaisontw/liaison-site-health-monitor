@@ -9,7 +9,6 @@
  * @package    liaison_site_health_monitor
  * @subpackage liaison_site_health_monitor/includes
  */
-if ( ! defined( 'ABSPATH' ) ) exit;
 
 require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-db.php';
 
@@ -35,7 +34,7 @@ class LIAISIHM_Activator {
 	public static function activate() {
 		LIAISIHM_DB::install();
 		
-		add_option( 'liaisihm_active', 'yes' );
+		add_option( 'liaison_site_health_monitor_active', 'yes' );
 		add_option( 'liaisihm_slow_query_threshold', 50 );
 	}
 

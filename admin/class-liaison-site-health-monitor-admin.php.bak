@@ -20,8 +20,6 @@
  * @subpackage liaison_site_health_monitor/admin
  * @author     liason <liaison.tw@gmail.com>
  */
-if ( ! defined( 'ABSPATH' ) ) exit;
-
 if ( ! class_exists( 'LIAISIHM_metrics' ) )
 	require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-liaison-site-health-monitor-metrics.php';
 
@@ -159,7 +157,7 @@ class LIAISIHM_Admin {
 
 	public function render_page_tabs() {
 		$wp_version = get_bloginfo('version');
-		$liaisihm_rows = LIAISIHM_DB::get_top_slow_queries();
+		$rows = LIAISIHM_DB::get_top_slow_queries();
 			
 		$memory = LIAISIHM_metrics::shm_get_memory_usage();
 		$db_time = LIAISIHM_metrics::shm_get_db_query_time();

@@ -1,6 +1,6 @@
 
-=== liaison site health monitor ===
-Contributors: Liaison
+=== Site Health Monitor & Slow Query Monitor ===
+Contributors: liaisontw
 Tags: performance, site-health, database, slow-query, profiling
 Requires at least: 6.0
 Tested up to: 7.0
@@ -9,13 +9,13 @@ Stable tag: 1.0.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Developer-focused WordPress diagnostic plugin using WordPress core SAVEQUERIES for site health metrics and slow query profiling.
+An engineering-focused WordPress diagnostic plugin that provides site health metrics and database slow query profiling **by leveraging WordPress’s official query debugging mechanism (`SAVEQUERIES`)**.
 
 
 
 == Description ==
 
-**liaison site health monitor** is an admin-only diagnostic tool built for developers and operators who want **clear visibility into WordPress performance characteristics** without introducing undocumented runtime behavior.
+**Site Health Monitor & Slow Query Monitor** is an admin-only diagnostic tool built for developers and operators who want **clear visibility into WordPress performance characteristics** without introducing undocumented runtime behavior.
 
 This plugin intentionally **requires `SAVEQUERIES` to be enabled in `wp-config.php`**, and does not attempt to bypass or reimplement WordPress core database instrumentation.
 
@@ -139,12 +139,12 @@ This makes the plugin suitable for **development, staging, and controlled produc
 
    define( 'SAVEQUERIES', true );
 
-2. Upload the plugin to `wp-content/plugins/liaison-site-health-monitor`.
+2. Upload the plugin to `wp-content/plugins/site-health-monitor`.
 
 3. Activate via WordPress admin.
 
 4. Navigate to:
-   **Tools → Site Health**
+   **Tools → Site Health Monitor**
 
 5. Review site metrics and slow query data.
 

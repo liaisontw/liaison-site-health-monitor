@@ -30,13 +30,11 @@ class LIAISIHM_Query_Profiler {
             return;
         }
 
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
         error_log( 'queries count=' . ( is_array( $wpdb->queries ) ? count( $wpdb->queries ) : 'not array' ) );
  
         $slow_queries = [];
         $current_time = current_time( 'mysql' );
-        $request_uri = isset( $_SERVER['REQUEST_URI'] ) ? esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-
+        $request_uri  = $_SERVER['REQUEST_URI'] ?? '';
         // 動態取得使用者設定的門檻
         $threshold_ms = LIAISIHM_DB::get_threshold();
 
@@ -84,18 +82,17 @@ class LIAISIHM_Query_Profiler {
 
         if ( ! empty( $slow_queries ) ) {
             // 工程品質：使用一次性寫入，減少 DB 連接開銷
-            //self::save_batch( $slow_queries );
+            self::save_batch( $slow_queries );
         }
 
         // 展現維運思維：清理工作不應每次頁面加載都執行
         // 建議使用 WP-Cron，或至少隨機觸發（Lottery approach）
-        if ( wp_rand( 1, 100 ) === 1 ) {
+        if ( rand( 1, 100 ) === 1 ) {
             LIAISIHM_DB::cleanup( self::RETENTION_DAYS );
         }
     }
 
     private static function get_simplified_backtrace() {
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
         $trace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS );
         $stack = [];
 
@@ -122,7 +119,7 @@ class LIAISIHM_Query_Profiler {
         // 展現「防禦性開發」：暫時暫停 Profiling，防止記錄自己的寫入動作
         remove_action( 'shutdown', [ __CLASS__, 'collect_and_store_queries' ], 999 );
         
-        //LIAISIHM_DB::insert_batch( $data );
+        LIAISIHM_DB::insert_batch( $data );
     }
 
     private static function normalize_sql( $sql ) {
@@ -134,19 +131,12 @@ class LIAISIHM_Query_Profiler {
     private static function has_index( $sql ) {
         global $wpdb;
 
-        $sql = trim( $sql );
-
-        if ( stripos( $sql, 'SELECT' ) !== 0 ) {
+        if ( stripos( $sql, 'select' ) !== 0 ) {
             return null;
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Checking for indexes is a read-only operation and does not modify the database.
         $explain = $wpdb->get_results( 'EXPLAIN ' . $sql, ARRAY_A );
 
-        if ( null === $explain ) {
-            return null;
-        }
-       
         foreach ( (array) $explain as $row ) {
             if ( empty( $row['key'] ) ) {
                 return false;

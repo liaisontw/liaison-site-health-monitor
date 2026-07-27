@@ -11,9 +11,6 @@
  * @package    liaison_site_health_monitor
  * @subpackage liaison_site_health_monitor/public/partials
  */
-
-if ( ! defined( 'ABSPATH' ) ) exit;
-
 ?>
 
 <!-- This file should primarily consist of HTML with a little bit of PHP. -->

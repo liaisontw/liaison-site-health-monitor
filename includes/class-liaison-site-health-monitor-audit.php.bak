@@ -28,23 +28,8 @@ class LIAISIHM_Audit {
         global $wpdb;
         $version = $wpdb->db_version();
         
-        
-        $liaisihm_cache_key  = 'table_status_' . $wpdb->prefix . 'posts';
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $table_status = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
-
-        if ( false === $table_status ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $table_status = $wpdb->get_row( 
-                $wpdb->prepare( "SHOW TABLE STATUS LIKE %s", $wpdb->prefix . 'posts' ) 
-            );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $table_status, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
-
         // 檢查核心資料表是否使用 InnoDB
+        $table_status = $wpdb->get_row( $wpdb->prepare( "SHOW TABLE STATUS LIKE %s", $wpdb->prefix . 'posts' ) );
         $engine = isset( $table_status->Engine ) ? $table_status->Engine : 'Unknown';
 
         $class = ( $engine === 'InnoDB' ) ? 'shm-status-good' : 'shm-status-warning';
@@ -56,22 +41,9 @@ class LIAISIHM_Audit {
      */
     public static function get_autoload_size() {
         global $wpdb;
-        
-        $liaisihm_cache_key  = 'table_status_' . $wpdb->options ;
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $size_bytes = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
-
-        if ( false === $size_bytes ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $size_bytes = $wpdb->get_var( 
-                "SELECT SUM(LENGTH(option_value)) 
-                FROM $wpdb->options WHERE autoload = 'yes'" );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $size_bytes, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
-        
+        $size_bytes = $wpdb->get_var( 
+            "SELECT SUM(LENGTH(option_value)) 
+             FROM $wpdb->options WHERE autoload = 'yes'" );
         $size_kb = round( $size_bytes / 1024, 2 );
         
         $class = ( $size_kb > 1024 ) ? 'shm-status-bad' : 'shm-status-good';
@@ -83,51 +55,28 @@ class LIAISIHM_Audit {
     public static function get_autoload_stats( $limit = 10 ) {
         global $wpdb;
 
-        $liaisihm_cache_key  = 'rows_' . $wpdb->options ;
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $rows = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
+        $table = $wpdb->options;
 
-        if ( false === $rows ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $rows = $wpdb->get_results(
-                $wpdb->prepare(
-                    "
-                    SELECT 
-                        option_name,
-                        LENGTH(option_value) AS size_bytes
-                    FROM {$wpdb->options}
-                    WHERE autoload = 'yes'
-                    ORDER BY size_bytes DESC
-                    LIMIT %d
-                    ",
-                    $limit
-                ),
-                ARRAY_A
-            );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $rows, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
+        $rows = $wpdb->get_results(
+            "
+            SELECT 
+                option_name,
+                LENGTH(option_value) AS size_bytes
+            FROM {$table}
+            WHERE autoload = 'yes'
+            ORDER BY size_bytes DESC
+            LIMIT {$limit}
+            ",
+            ARRAY_A
+        );
 
-        $liaisihm_cache_key  = 'total_' . $wpdb->options ;
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $total = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
-
-        if ( false === $total ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $total = (int) $wpdb->get_var(
-                "
-                SELECT SUM(LENGTH(option_value))
-                FROM {$wpdb->options}
-                WHERE autoload = 'yes'
-                "
-            );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $total, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
+        $total = (int) $wpdb->get_var(
+            "
+            SELECT SUM(LENGTH(option_value))
+            FROM {$table}
+            WHERE autoload = 'yes'
+            "
+        );
 
         return [
             'total_bytes' => $total,

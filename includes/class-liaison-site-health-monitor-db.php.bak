@@ -3,12 +3,6 @@ defined( 'ABSPATH' ) || exit;
 
 class LIAISIHM_DB {
 
-    /**
-     * Returns the plugin-owned database table name.
-     *
-     * The returned value is constructed from $wpdb->prefix and a fixed suffix.
-     * It never contains user-controlled input.
-     */
     public static function table_name() {
         global $wpdb;
 
@@ -44,12 +38,8 @@ class LIAISIHM_DB {
 
     public static function insert( array $row ) {
         global $wpdb;
-
-        $table_name = esc_sql( self::table_name() );
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $wpdb->insert(
-            $table_name,
+            self::table_name(),
             $row,
             [
                 '%s', '%s', '%f', '%s', '%s', '%s'
@@ -64,8 +54,7 @@ class LIAISIHM_DB {
             return;
         }
 
-        //$table_name = self::table_name();
-        $table_name = esc_sql( self::table_name() );
+        $table_name = self::table_name();
         $values     = [];
         $placeholders = [];
 
@@ -97,54 +86,33 @@ class LIAISIHM_DB {
                 VALUES " . implode( ', ', $placeholders );
 
         // 透過 $wpdb->prepare 安全地執行
-        //$sql = $wpdb->prepare( $query, ...$values );
-
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query prepared above.
-        //return $wpdb->query( $sql );
+        return $wpdb->query( $wpdb->prepare( $query, $values ) );
     }
 
     public static function cleanup( $days = 7 ) {
         global $wpdb;
-
-        $table_name = self::table_name(); 
-
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Deleting old historical records from plugin custom table.
         $wpdb->query(
             $wpdb->prepare(
-                "DELETE FROM " . esc_sql( $table_name ) . " WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
+                "DELETE FROM " . self::table_name() . " WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
                 $days
             )
         );
-
     }
 
     public static function getDB( ) {
         global $wpdb;
 
-		$table_name = self::table_name(); 
-
-        $liaisihm_cache_key  = 'getDB_' . $table_name ;
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $rows = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
-
-        if ( false === $rows ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $rows = $wpdb->get_results(
-                "SELECT query_text, 
-                        total_time_ms, 
-                        request_uri, 
-                        created_at,
-                        normalized,
-                        has_index
-                FROM " . esc_sql( $table_name ) . "
-                ORDER BY total_time_ms DESC
-                LIMIT 10"
-            );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $rows, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
+		$rows = $wpdb->get_results(
+			"SELECT query_text, 
+                    total_time_ms, 
+                    request_uri, 
+                    created_at,
+                    normalized,
+                    has_index
+			FROM " . self::table_name() . "
+			ORDER BY total_time_ms DESC
+			LIMIT 10"
+		);
 
         return $rows;
     }
@@ -161,34 +129,21 @@ class LIAISIHM_DB {
 
         // 2. 雖然此查詢無變數，但習慣上使用 prepare 增加一致性
         // 或是將 LIMIT 設為參數，增加方法的靈活性
-        $liaisihm_cache_key  = 'result_' . $table ;
-        $liaisihm_cache_group = 'liaison_site_health_group';
-        $result = wp_cache_get( $liaisihm_cache_key, $liaisihm_cache_group );
+        $query = $wpdb->prepare(
+            "SELECT query_text, 
+                    total_time_ms, 
+                    request_uri, 
+                    created_at,
+                    normalized,
+                    has_index,
+                    call_stack
+            FROM {$table} 
+            ORDER BY total_time_ms DESC 
+            LIMIT %d",
+            $limit
+        );
 
-        if ( false === $result ) {
-            // phpcs:ignore WordPress.DB.PreparedSQL.NotPreparedUse
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $result = $wpdb->get_results( 
-                $wpdb->prepare(
-                    "SELECT query_text, 
-                            total_time_ms, 
-                            request_uri, 
-                            created_at,
-                            normalized,
-                            has_index,
-                            call_stack
-                    FROM " . esc_sql( $table ) . "
-                    ORDER BY total_time_ms DESC 
-                    LIMIT %d",
-                    $limit
-                )
-            );
-            
-            // 快取 12 小時（43200 秒）或依需求調整時間
-            wp_cache_set( $liaisihm_cache_key, $result, $liaisihm_cache_group, 12 * HOUR_IN_SECONDS );
-        }
-        
-        return $result;
+        return $wpdb->get_results( $query );
     }
 
     public static function get_threshold() {
