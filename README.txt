@@ -157,7 +157,15 @@ This makes the plugin suitable for **development, staging, and controlled produc
 * Manual validation of query timing accuracy.
 * No dependency on non-core WordPress behavior.
 
+== Screenshots ==
 
+1. **Site Health Dashboard**
+
+Overview of WordPress runtime, database, cache, and performance metrics, including slow queries detected through the core `SAVEQUERIES` mechanism.
+
+2. **Slow DB Queries (Top 10)**
+
+Detailed view of the slowest database queries captured by `SAVEQUERIES`, including execution time, SQL pattern, request URI, timestamp, index status, and call stack for root-cause analysis.
 
  === Changelog ===
 
