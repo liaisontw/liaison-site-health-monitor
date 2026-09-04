@@ -26,7 +26,7 @@ class Site_Health_Audit_CLI_Test extends WP_UnitTestCase {
         
         
 
-        $this->cli = new Site_Health_Audit_CLI();
+        $this->cli = new LIAISIHM_CLI();
     }
 
     /**
