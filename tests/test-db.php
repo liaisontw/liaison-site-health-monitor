@@ -13,7 +13,7 @@ class LIAISIHM_DB_Test extends WP_UnitTestCase {
 		parent::setUp();
 		
 		// 確保資料表已建立
-		LIAISIHM_DB::install();
+		//LIAISIHM_DB::install();
 		
 		// 清除 Object Cache 避免快取干擾測試
 		wp_cache_flush();
