@@ -70,6 +70,30 @@ class LIAISIHM_Query_Profiler_Test extends WP_UnitTestCase {
 	/**
 	 * 測試 EXPLAIN 檢查索引狀態 (以核心 wp_posts 表為例)
 	 */
+    /**
+	 * 測試 EXPLAIN 檢查索引狀態 (以核心 wp_posts 表為例)
+	 */
+	public function test_has_index_with_valid_query() {
+		$reflection = new ReflectionClass( 'LIAISIHM_Query_Profiler' );
+		$method     = $reflection->getMethod( 'has_index' );
+		$method->setAccessible( true );
+
+		global $wpdb;
+
+		// 1. 先建立一筆真實文章，避免空表導致 EXPLAIN 產生 Impossible WHERE
+		$post_id = $this->factory()->post->create( [
+			'post_title'  => 'Test Post for Index Verification',
+			'post_status' => 'publish',
+		] );
+
+		// 2. 針對使用 Primary Key (ID) 的查詢進行測試
+		$indexed_sql   = $wpdb->prepare( "SELECT * FROM {$wpdb->posts} WHERE ID = %d", $post_id );
+		$has_index_res = $method->invoke( null, $indexed_sql );
+
+		$this->assertTrue( (bool) $has_index_res, '針對 Primary Key ID 的 SELECT 查詢應判定為有使用索引' );
+	}
+
+    /*
 	public function test_has_index_with_valid_query() {
 		$reflection = new ReflectionClass( 'LIAISIHM_Query_Profiler' );
 		$method     = $reflection->getMethod( 'has_index' );
@@ -82,6 +106,7 @@ class LIAISIHM_Query_Profiler_Test extends WP_UnitTestCase {
 
 		$this->assertTrue( $has_index_res );
 	}
+        */
 
 	/**
 	 * 測試 collect_and_store_queries 過濾未達門檻的快查詢
