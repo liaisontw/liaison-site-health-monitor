@@ -21,22 +21,20 @@ class LIAISIHM_DB {
         $table = self::table_name();
         $charset = $wpdb->get_charset_collate();
 
-        $sql = "
-        CREATE TABLE {$table} (
-            id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-            query_hash CHAR(32) NOT NULL,
-            query_text LONGTEXT NOT NULL,
-            total_time_ms FLOAT NOT NULL,
-            call_stack TEXT NULL,
-            request_uri TEXT NULL,
-            created_at DATETIME NOT NULL,
-            normalized TEXT NULL,
-            has_index BOOLEAN NULL,
-            PRIMARY KEY (id),
+        $sql = "CREATE TABLE {$table} (
+            id bigint(20) unsigned NOT NULL auto_increment,
+            query_hash char(32) NOT NULL,
+            query_text longtext NOT NULL,
+            total_time_ms float NOT NULL,
+            call_stack text NULL,
+            request_uri text NULL,
+            created_at datetime NOT NULL,
+            normalized text NULL,
+            has_index tinyint(1) NULL,
+            PRIMARY KEY  (id),
             KEY query_hash (query_hash),
             KEY created_at (created_at)
-        ) {$charset};
-        ";
+        ) {$charset};";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         dbDelta( $sql );
