@@ -15,10 +15,10 @@ class LIAISIHM_DB {
         return $wpdb->prefix . 'shm_query_log';
     }
 
-    public static function install() {
+public static function install() {
         global $wpdb;
 
-        $table = self::table_name();
+        $table   = self::table_name();
         $charset = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE {$table} (
