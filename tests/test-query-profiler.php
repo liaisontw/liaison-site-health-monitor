@@ -69,9 +69,13 @@ class LIAISIHM_Query_Profiler_Test extends WP_UnitTestCase {
 
 	/**
 	 * 測試 EXPLAIN 檢查索引狀態 (以核心 wp_posts 表為例)
-	 */
-    /**
-	 * 測試 EXPLAIN 檢查索引狀態 (以核心 wp_posts 表為例)
+     * test_has_index_with_valid_query 失敗的原因在於 WP_UnitTestCase 測試環境中的 SQLite / MySQL Driver 或 EXPLAIN 回傳結構差異。
+     * 當在測試環境執行 EXPLAIN SELECT * FROM wp_posts WHERE ID = 1 時：
+     * SQLite 驅動（若測試環境採用 SQLite）：EXPLAIN 回傳的欄位結構與 MySQL 不同，導致檢查 key 或 type 索引欄位的判斷式傳回 false 或 null。
+     * MySQL / MariaDB 模擬環境：在沒有建立真實文章（ID = 1 不存在）或 MySQL 評估資料表列數過少（0 rows）時，EXPLAIN 的 type 可能會傳回 ALL 或 NULL（例如 Impossible WHERE noticed after reading const tables），造成 Profiler 的索引檢查邏輯判定該查詢未用到索引。
+     * 修正方案
+     * 在執行 has_index 測試前，先透過 factory() 實體建立一筆文章，確保數據庫中有真實的列可被索引鎖定，並使用核心的索引欄位查詢：
+     * 把 test_has_index_with_valid_query 修改為以下內容：
 	 */
 	public function test_has_index_with_valid_query() {
 		$reflection = new ReflectionClass( 'LIAISIHM_Query_Profiler' );
@@ -92,21 +96,6 @@ class LIAISIHM_Query_Profiler_Test extends WP_UnitTestCase {
 
 		$this->assertTrue( (bool) $has_index_res, '針對 Primary Key ID 的 SELECT 查詢應判定為有使用索引' );
 	}
-
-    /*
-	public function test_has_index_with_valid_query() {
-		$reflection = new ReflectionClass( 'LIAISIHM_Query_Profiler' );
-		$method     = $reflection->getMethod( 'has_index' );
-		$method->setAccessible( true );
-
-		global $wpdb;
-		// 針對有主鍵或索引的查詢
-		$indexed_sql   = "SELECT * FROM {$wpdb->posts} WHERE ID = 1";
-		$has_index_res = $method->invoke( null, $indexed_sql );
-
-		$this->assertTrue( $has_index_res );
-	}
-        */
 
 	/**
 	 * 測試 collect_and_store_queries 過濾未達門檻的快查詢
