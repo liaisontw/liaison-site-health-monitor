@@ -40,6 +40,11 @@ if ( ! defined( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH' ) ) {
 //require getenv( 'WP_TESTS_DIR' ) . '/includes/bootstrap.php';
 require $_tests_dir . '/includes/bootstrap.php';
 
+/**
+ * Create plugin database tables for the test suite.
+ */
+require_once dirname( __DIR__ ) . '/includes/class-liaison-site-health-monitor-db.php';
+LIAISIHM_DB::install();
 
 
 
