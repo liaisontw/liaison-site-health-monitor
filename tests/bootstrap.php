@@ -44,7 +44,7 @@ require $_tests_dir . '/includes/bootstrap.php';
  * Create plugin database tables for the test suite.
  */
 require_once dirname( __DIR__ ) . '/includes/class-liaison-site-health-monitor-db.php';
-//LIAISIHM_DB::install();
+LIAISIHM_DB::install();
 
 
 
