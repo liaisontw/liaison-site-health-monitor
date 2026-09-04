@@ -42,6 +42,35 @@ class LIAISIHM_DB {
         dbDelta( $sql );
     }
 
+    /*
+    public static function install() {
+        global $wpdb;
+
+        $table = self::table_name();
+        $charset = $wpdb->get_charset_collate();
+
+        $sql = "
+        CREATE TABLE {$table} (
+            id bigint(20) unsigned NOT NULL auto_increment,
+            query_hash char(32) NOT NULL,
+            query_text longtext NOT NULL,
+            total_time_ms float NOT NULL,
+            call_stack text NULL,
+            request_uri text NULL,
+            created_at datetime NOT NULL,
+            normalized text NULL,
+            has_index tinyint(1) NULL,
+            PRIMARY KEY  (id),
+            KEY query_hash (query_hash),
+            KEY created_at (created_at)
+        ) {$charset};
+        ";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta( $sql );
+    }
+    */
+
     public static function insert( array $row ) {
         global $wpdb;
 
