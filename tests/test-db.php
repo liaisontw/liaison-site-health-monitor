@@ -56,7 +56,10 @@ class LIAISIHM_DB_Test extends WP_UnitTestCase {
 		$query = $wpdb->prepare( "SHOW TABLES LIKE %s", $table_name );
 		$result = $wpdb->get_var( $query );
 
-		$this->assertEquals( $table_name, $result );
+		LIAISIHM_DB::install();
+
+        //$this->assertSame( '', $wpdb->last_error );
+        $this->assertEquals( $table_name, $result );
 	}
 
 	/**

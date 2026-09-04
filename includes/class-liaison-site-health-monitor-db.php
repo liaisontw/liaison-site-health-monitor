@@ -15,10 +15,10 @@ class LIAISIHM_DB {
         return $wpdb->prefix . 'shm_query_log';
     }
 
-public static function install() {
+    public static function install() {
         global $wpdb;
 
-        $table   = self::table_name();
+        $table  = self::table_name();
         $charset = $wpdb->get_charset_collate();
 
         $sql = "CREATE TABLE {$table} (
@@ -31,13 +31,18 @@ public static function install() {
             created_at datetime NOT NULL,
             normalized text NULL,
             has_index tinyint(1) NULL,
-            PRIMARY KEY  (id),
+            PRIMARY KEY (id),
             KEY query_hash (query_hash),
             KEY created_at (created_at)
         ) {$charset};";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-        dbDelta( $sql );
+
+        $result = dbDelta( $sql );
+
+        error_log( 'DB table: ' . $table );
+        error_log( 'dbDelta: ' . print_r( $result, true ) );
+        error_log( 'DB error: ' . $wpdb->last_error );
     }
 
     /*
